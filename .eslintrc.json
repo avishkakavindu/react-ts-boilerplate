@@ -35,6 +35,13 @@
         "ts": "never",
         "tsx": "never"
       }
+    ],
+    "no-unused-vars": "warn",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
     ]
   },
   "settings": {

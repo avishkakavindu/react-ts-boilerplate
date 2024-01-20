@@ -1,11 +1,17 @@
 import React from 'react';
-import './App.css';
+import { Outlet } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
+
+import Header from './components/main/Header';
 
 function App() {
   return (
-    <div className="App">
-      <h1>hello world</h1>
-    </div>
+    <>
+      <Header />
+      <Container className="my-2">
+        <Outlet />
+      </Container>
+    </>
   );
 }
 
