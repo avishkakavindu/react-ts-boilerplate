@@ -1,9 +1,14 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Form, Button, Row, Col, Alert } from 'react-bootstrap';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
-import { ILoginInput } from 'types';
+import { TRootState } from 'store';
+import { IAuthState, ICustomErrorResponse, ILoginInput, TContextObject } from 'types';
+import { useLoginMutation } from 'slices/userAPI.slice';
+import { setCredentials } from 'slices/auth.slice';
 import FormContainer from 'components/form/FormContainer';
 
 function Login() {
@@ -11,10 +16,52 @@ function Login() {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<ILoginInput>();
 
-  const onSubmit: SubmitHandler<ILoginInput> = (data) => {
-    console.log(data);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [login, { isLoading }] = useLoginMutation();
+  const { userInfo } = useSelector((state: TRootState) => state.auth);
+
+  const [responseErrors, setResponseErrors] = useState<string[]>();
+
+  useEffect(() => {
+    // if user info available navigate to home page
+    if (userInfo) {
+      navigate('/');
+    }
+  }, [navigate, userInfo]);
+
+  /**
+   * FOrm submit handler
+   * @param {ILoginInput} data - Login form data
+   */
+  const onSubmit: SubmitHandler<ILoginInput> = async (data) => {
+    try {
+      const res = await login(data).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate('/');
+    } catch (err) {
+      const errorResponse = err as ICustomErrorResponse;
+      if (errorResponse?.data) {
+        const { error } = errorResponse.data;
+
+        if (error?.userMessage !== '') {
+          setResponseErrors([error.userMessage]);
+        } else {
+          const { context } = error;
+          const errMessages =
+            context?.map((errorItem: TContextObject) => {
+              const { message } = errorItem;
+              return message;
+            }) || [];
+          setResponseErrors(errMessages);
+        }
+      }
+      toast.error('Authentication failed');
+    }
   };
 
   return (
@@ -57,6 +104,18 @@ function Login() {
             </Form.Control.Feedback>
           )}
         </Form.Group>
+
+        {responseErrors && (
+          <Alert variant="danger">
+            <ul>
+              {responseErrors.map((message) => (
+                <li key={message}>
+                  <small>{message}</small>
+                </li>
+              ))}
+            </ul>
+          </Alert>
+        )}
 
         <Button type="submit" variant="primary" className="mt-3">
           Sign In

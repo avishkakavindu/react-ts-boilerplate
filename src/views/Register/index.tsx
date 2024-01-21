@@ -24,18 +24,35 @@ function Register() {
 
       <Form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Form.Group className="my-2" controlId="name">
-          <Form.Label> Name</Form.Label>
+          <Form.Label> First Name</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter Name"
-            {...register('name', {
-              required: 'Name is required',
+            placeholder="Enter First Name"
+            {...register('firstName', {
+              required: 'First Name is required',
             })}
-            isInvalid={!!errors.name}
+            isInvalid={!!errors.firstName}
           />
-          {errors.name && (
+          {errors.firstName && (
             <Form.Control.Feedback type="invalid">
-              {errors.name.message?.toString()}
+              {errors.firstName.message?.toString()}
+            </Form.Control.Feedback>
+          )}
+        </Form.Group>
+
+        <Form.Group className="my-2" controlId="name">
+          <Form.Label> Last Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Last Name"
+            {...register('lastName', {
+              required: 'Last Name is required',
+            })}
+            isInvalid={!!errors.lastName}
+          />
+          {errors.lastName && (
+            <Form.Control.Feedback type="invalid">
+              {errors.lastName.message?.toString()}
             </Form.Control.Feedback>
           )}
         </Form.Group>
