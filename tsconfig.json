@@ -19,8 +19,4 @@
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "build"],
-  "paths": {
-    "@views/*": ["views/*"],
-    "@components/*": ["components/*"],
-  },
 }
